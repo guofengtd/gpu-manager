@@ -37,7 +37,7 @@ spec:
         nvidia-device-enable: enable
       hostPID: true
       containers:
-        - image: tkestack/gpu-manager:1.0.3
+        - image: guofengjd/gpu-manager:latest
           imagePullPolicy: Always
           name: gpu-manager
           securityContext:
@@ -63,11 +63,14 @@ spec:
             - name: usr-directory
               mountPath: /usr/local/host
               readOnly: true
+            - name: kube-root
+              mountPath: /root/.kube
+              readOnly: true
           env:
             - name: LOG_LEVEL
               value: "4"
             - name: EXTRA_FLAGS
-              value: "--logtostderr=false"
+              value: "--logtostderr=false --container-runtime-endpoint=/run/containerd/containerd.sock --cgroup-driver=cgroupfs --share-mode=true"
             - name: NODE_NAME
               valueFrom:
                 fieldRef:
@@ -109,3 +112,7 @@ spec:
           hostPath:
             type: Directory
             path: /usr
+        - name: kube-root
+          hostPath:
+            type: Directory
+            path: /root/.kube
